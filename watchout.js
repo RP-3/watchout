@@ -2,10 +2,24 @@
 //will be used to set properties of the svg element
 var width = 400;
 var height = 400;
+var enemyCount = 20;
+var radius = 5;
+var enemyData = [];
 
-var enemyData = [
-	{"cx": 20, "cy": 20, "radius": 20, "color": "blue"}];
+var enemyMaker = function(i){
+  var instance = {};
+  instance.cx = Math.floor(Math.random()*width);
+  instance.cy = Math.floor(Math.random()*height);
+  instance.id = i;
+  instance.r = radius;
+  instance.color = "blue";
+  return instance;
+};
 
+//create data for D3 to manipulate
+for (var i=0; i<enemyCount+1; i++){
+  enemyData.push(enemyMaker(i));
+}
 
 //our primary svg element. everything will go inside this
 var svg = d3.select("body").append("svg") //create svg element
@@ -15,20 +29,30 @@ var svg = d3.select("body").append("svg") //create svg element
 //add a group to hold all enemies
 var enemyGroup = svg.append("g");
 
-//add enemies to enemy group
-var enemies = enemyGroup.selectAll("circle") //select all "enemy", existing or not
-	.data(enemyData) //refers to enemyData array
-	.enter() //selects only html nodes not in existence
-	.append("circle"); //appends nodes to enemygroup (inside svg)
 
-//add enemy attributes as a property of enemies, defined above
-var enemyAttributes = enemies
-  .attr("cx", function(d){return d.cx;})
-  .attr("cy", function(d){return d.cy;})
-  .attr("r", function(d){return d.radius;})
-  .attr("transform", "translate("+
-    Math.floor(Math.random()*width)+","+
-    Math.floor(Math.random()*height)+")")
-  .style("fill", function(d){return d.color;});
+var update = function(enemyData){
+
+  //Data join
+  //select all existing enemies and perform the following
+  var enemies = enemyGroup.selectAll("circle") //select all "enemy", existing or not
+    .data(enemyData, function(d){return d.id;}); //refers to enemyData array
+
+  //Update
+  enemies.transition().duration(2000)
+    .attr("cx", function(){return Math.floor(Math.random()*(width-radius))})
+    .attr("cy", function(){return Math.floor(Math.random()*(height-radius))});
+
+  //Enter
+  enemies.enter().append("circle")
+    .attr("cx", function(d){return d.cx;})
+    .attr("cy", function(d){return d.cy;})
+    .attr("r", function(d){return d.r;})
+    .style("fill", function(d){return d.color;});
+};
+
+setInterval(function(){
+  update(enemyData);
+}, 5000);
+
 
 
