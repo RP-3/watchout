@@ -6,13 +6,23 @@ var enemyCount = 20;
 var radius = 5;
 var enemyData = [];
 
+//holds player attributes prior to rendering
+var playerData = [{
+  cx: 200,
+  cy: 200,
+  r: 8,
+  id: "player",
+  color: "red"
+}];
+
+//factory function for making enemies
 var enemyMaker = function(i){
   var instance = {};
   instance.cx = Math.floor(Math.random()*width);
   instance.cy = Math.floor(Math.random()*height);
   instance.id = i;
   instance.r = radius;
-  instance.color = "blue";
+  instance.color = "white";
   return instance;
 };
 
@@ -28,7 +38,7 @@ var svg = d3.select("body").append("svg") //create svg element
 
 //add a group to hold all enemies
 var enemyGroup = svg.append("g");
-
+var playerGroup = svg.append("g");
 
 var update = function(enemyData){
 
@@ -37,22 +47,37 @@ var update = function(enemyData){
   var enemies = enemyGroup.selectAll("circle") //select all "enemy", existing or not
     .data(enemyData, function(d){return d.id;}); //refers to enemyData array
 
+  var player = playerGroup.selectAll("circle")
+   .data(playerData, function(d){return d.id;});
+
   //Update
   enemies.transition().duration(2000)
-    .attr("cx", function(){return Math.floor(Math.random()*(width-radius))})
-    .attr("cy", function(){return Math.floor(Math.random()*(height-radius))});
+    .attr("cx", function(){return Math.floor(Math.random()*(width-radius));})
+    .attr("cy", function(){return Math.floor(Math.random()*(height-radius));});
 
   //Enter
   enemies.enter().append("circle")
+  .transition().duration(500)
     .attr("cx", function(d){return d.cx;})
     .attr("cy", function(d){return d.cy;})
     .attr("r", function(d){return d.r;})
-    .style("fill", function(d){return d.color;});
+    .style("fill", function(d){return d.color;})
+    .transition().duration(500)
+      .style("fill", "grey");
+
+  player.enter().append("circle")
+  .attr("class", )
+  .transition().duration(2000)
+  .attr("cx", function(d){return d.cx;})
+  .attr("cy", function(d){return d.cy;})
+  .attr("r", function(d){return d.r;})
+  .style("fill", function(d){return d.color;});
+
 };
 
 setInterval(function(){
   update(enemyData);
-}, 5000);
+}, 2000);
 
 
 
