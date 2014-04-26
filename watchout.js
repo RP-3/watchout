@@ -63,12 +63,13 @@ var update = function(enemyData){
 
   //Update
   enemies.transition().duration(2000)
-    .attr("cx", function(){return Math.floor(Math.random()*(width-radius));})
-    .attr("cy", function(){return Math.floor(Math.random()*(height-radius));});
+    .attr("cx", function(){return Math.floor(Math.random()*(width-20));})
+    .attr("cy", function(){return Math.floor(Math.random()*(height-20));});
 
   //Enter
   enemies.enter().append("circle")
   .transition().duration(500)
+    .attr("class", "enemy")
     .attr("cx", function(d){return d.cx;})
     .attr("cy", function(d){return d.cy;})
     .attr("r", function(d){return d.r;})
@@ -81,19 +82,34 @@ var update = function(enemyData){
   .attr("cx", function(d){return d.cx;})
   .attr("cy", function(d){return d.cy;})
   .attr("r", function(d){return d.r;})
-  .attr("class", "draggable")
+  .attr("class", "player")
   .style("fill", function(d){return d.color;});
 
   player.call(d3.behavior.drag()
         .on("drag", function(d){
-          var x = event.x;
-          var y = event.y;
+          var x = event.x -10;
+          if (x<0){x=0;}
+          if (x>width){x=width;}
+          var y = event.y -65;
+          if (y<0){y=0;}
+          if (y>height){y=height;}
           d3.select(this).attr("cx", function(d){return x;})
                          .attr("cy", function(d){return y;});
         }));
 };
 
-
+setInterval(function(){
+  var enemyArray = d3.selectAll(".enemy")[0];
+  var player = d3.selectAll(".player");
+  for (var i=0; i<enemyCount+1; i++){
+   var enemyX = enemyArray[i].cx.animVal.value;
+   var enemyY = enemyArray[i].cx.animVal.value;
+   var playerX = (d3.selectAll(".player"))[0][0].cx.animVal.value;
+   var playerY = (d3.selectAll(".player"))[0][0].cx.animVal.value;
+   var distance = Math.sqrt((enemyX - playerX)*(enemyX - playerX) + (enemyY - playerY)*(enemyY - playerY));
+   if (distance<13){console.log("fire!");}
+  }
+}, 100);
 
 setInterval(function(){
   update(enemyData);
