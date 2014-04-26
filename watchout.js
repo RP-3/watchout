@@ -5,6 +5,10 @@ var height = 400;
 var enemyCount = 20;
 var radius = 5;
 var enemyData = [];
+var collisions = 0;
+
+var score = 0;
+var reset = false;
 
 //dragging listener. increments attr by returned event parameters
 d3.behavior.drag()
@@ -98,6 +102,21 @@ var update = function(enemyData){
         }));
 };
 
+var setScore = function(){
+  var score = 0;
+  setInterval(function(){
+    if (reset){
+      score = 0;
+      reset = false;
+    }else{
+      score++;
+      d3.selectAll(".current span").text(score);
+    }
+  }, 50);
+};
+
+setScore();
+
 setInterval(function(){
   var enemyArray = d3.selectAll(".enemy")[0];
   var player = d3.selectAll(".player");
@@ -107,7 +126,10 @@ setInterval(function(){
    var playerX = (d3.selectAll(".player"))[0][0].cx.animVal.value;
    var playerY = (d3.selectAll(".player"))[0][0].cx.animVal.value;
    var distance = Math.sqrt((enemyX - playerX)*(enemyX - playerX) + (enemyY - playerY)*(enemyY - playerY));
-   if (distance<13){console.log("fire!");}
+   if (distance<10){
+    reset = true;
+    d3
+   }
   }
 }, 100);
 
