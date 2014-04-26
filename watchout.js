@@ -6,6 +6,16 @@ var enemyCount = 20;
 var radius = 5;
 var enemyData = [];
 
+//dragging listener. increments attr by returned event parameters
+d3.behavior.drag()
+.on("drag", function(d){
+  d.x += d3.event.dx;
+  d.y += d3.event.dy;
+  d3.select(this).attr("transform", function(d){
+    return "translate(" + [ d.x,d.y ] + ")";
+  });
+});
+
 //holds player attributes prior to rendering
 var playerData = [{
   cx: 200,
@@ -30,6 +40,7 @@ var enemyMaker = function(i){
 for (var i=0; i<enemyCount+1; i++){
   enemyData.push(enemyMaker(i));
 }
+
 
 //our primary svg element. everything will go inside this
 var svg = d3.select("body").append("svg") //create svg element
@@ -66,14 +77,23 @@ var update = function(enemyData){
       .style("fill", "grey");
 
   player.enter().append("circle")
-  .attr("class", )
   .transition().duration(2000)
   .attr("cx", function(d){return d.cx;})
   .attr("cy", function(d){return d.cy;})
   .attr("r", function(d){return d.r;})
+  .attr("class", "draggable")
   .style("fill", function(d){return d.color;});
 
+  player.call(d3.behavior.drag()
+        .on("drag", function(d){
+          var x = event.x;
+          var y = event.y;
+          d3.select(this).attr("cx", function(d){return x;})
+                         .attr("cy", function(d){return y;});
+        }));
 };
+
+
 
 setInterval(function(){
   update(enemyData);
